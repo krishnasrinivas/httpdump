@@ -102,7 +102,11 @@ func main() {
 	key := flag.String("key", "", "private key")
 	flag.Parse()
 
-	fwd, _ := forward.New(forward.PassHostHeader(true), forward.Rewriter(rewrite{}))
+	fwd, _ := forward.New(
+		forward.PassHostHeader(true),
+		forward.Rewriter(rewrite{}),
+		forward.RoundTripper(&http.Transport{DisableCompression: true}),
+	)
 	server := &http.Server{
 		Addr:    *listenAddr,
 		Handler: logger{forwarder{"http", *fwdAddr, fwd}},
